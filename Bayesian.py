@@ -1,3 +1,5 @@
+# commit from pycharm
+
 import numpy as np
 
 lst = [1, 2, 3]
@@ -637,23 +639,56 @@ plt.ylim([0, 1]);
 #
 # API for Stan in Python:
 # - **PyStan**
-
 # We will consider PPLs available via Python in breadth and depth: first, we will implement the same simple model in several PPLs (breadth), and then will dive into one PPLs by considering more examples.
 # PyMC3
 # https://docs.pymc.io/
 # PyMC3 syntaxis
 import pymc3 as pm
-
 # Model creation
 with pm.Model() as model:
     # Model definition
     pass
-
 # Unobserved random variables
 with pm.Model():
     x = pm.Normal('x', mu=0, sd=1)
-
 # Observed random variables
-
 with pm.Model() as model:
     obs = pm.Normal('obs', mu=3, sd=1, observed=np.random.randn(100))
+
+# Coin tossing problem - PyMC3
+n = 100    # number of trials
+h = 61     # number of successes
+#alpha = 2  # hyperparameters
+#beta = 2
+niter = 1000
+
+% % time
+with pm.Model() as model:
+    # prior
+    p = pm.Beta('p', alpha=2, beta=2)
+    # likelihood
+    y = pm.Binomial('y', n=n, p=p, observed=h)
+    # inference
+    start = pm.find_MAP()  # Use MAP estimate (optimization) as the initial state for MCMC
+    step = pm.Metropolis()  # Have a choice of samplers
+
+    trace = pm.sample(niter, step, start, random_seed=123, progressbar=True)
+
+    # trace = pm.sample(niter, random_seed=123, progressbar=True)
+
+% % time
+with pm.Model() as model:
+    # prior
+    p = pm.Beta('p', alpha=2, beta=2)
+
+    # likelihood
+    y = pm.Binomial('y', n=n, p=p, observed=h)
+
+    # inference
+    # start = pm.find_MAP()  # Use MAP estimate (optimization) as the initial state for MCMC
+    # step = pm.Metropolis() # Have a choice of samplers
+
+    # trace = pm.sample(niter, step, start, random_seed=123, progressbar=True)
+
+    trace = pm.sample(niter, random_seed=123, progressbar=True)
+
